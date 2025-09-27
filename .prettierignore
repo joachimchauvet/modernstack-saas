@@ -5,5 +5,11 @@ yarn.lock
 bun.lock
 bun.lockb
 
+# Tools
+.claude/
+
+# UI Components
+src/lib/components/ui/
+
 # Miscellaneous
 /static/

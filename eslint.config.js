@@ -18,6 +18,17 @@ export default defineConfig(
 	prettier,
 	...svelte.configs.prettier,
 	{
+		ignores: [
+			'.claude/**',
+			'convex/_generated/**',
+			'src/convex/_generated/**',
+			'build/**',
+			'.svelte-kit/**',
+			'package/**',
+			'src/lib/components/ui/**'
+		]
+	},
+	{
 		languageOptions: {
 			globals: { ...globals.browser, ...globals.node }
 		},
