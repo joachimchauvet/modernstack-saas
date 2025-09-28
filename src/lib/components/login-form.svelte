@@ -1,19 +1,32 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
+	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 	import { authClient } from '$lib/auth-client.js';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { getContext } from 'svelte';
 
-	const id = $props.id();
+	interface Props {
+		id?: string;
+		mode?: 'signin' | 'signup';
+	}
 
-	let email = $state('');
+	const { id, mode = 'signin' }: Props = $props();
+
+	const authEmailCtx = getContext<{ get: () => string; set: (v: string) => void }>('auth:email');
+
+	let email = $state(authEmailCtx?.get() ?? '');
 	let password = $state('');
 	let name = $state('');
-	let isSignUp = $state(false);
+	let isSignUp = $state(mode === 'signup');
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
+
+	$effect(() => {
+		authEmailCtx?.set(email);
+	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
@@ -22,11 +35,11 @@
 
 		try {
 			if (isSignUp) {
-				const result = await authClient.signUp.email(
+				await authClient.signUp.email(
 					{ name, email, password },
 					{
 						onSuccess: () => {
-							goto('/dashboard');
+							goto(resolve('/dashboard'));
 						},
 						onError: (ctx) => {
 							error = ctx.error.message;
@@ -34,11 +47,11 @@
 					}
 				);
 			} else {
-				const result = await authClient.signIn.email(
+				await authClient.signIn.email(
 					{ email, password },
 					{
 						onSuccess: () => {
-							goto('/dashboard');
+							goto(resolve('/dashboard'));
 						},
 						onError: (ctx) => {
 							error = ctx.error.message;
@@ -65,11 +78,6 @@
 			console.error('Google auth error:', err);
 		}
 	}
-
-	function toggleMode() {
-		isSignUp = !isSignUp;
-		error = null;
-	}
 </script>
 
 <Card.Root class="mx-auto w-full max-w-sm">
@@ -91,13 +99,7 @@
 				{#if isSignUp}
 					<div class="grid gap-2">
 						<Label for="name-{id}">Name</Label>
-						<Input
-							id="name-{id}"
-							type="text"
-							placeholder="John Doe"
-							bind:value={name}
-							required
-						/>
+						<Input id="name-{id}" type="text" placeholder="John Doe" bind:value={name} required />
 					</div>
 				{/if}
 
@@ -115,17 +117,15 @@
 					<div class="flex items-center">
 						<Label for="password-{id}">Password</Label>
 						{#if !isSignUp}
-							<a href="#" class="ml-auto inline-block text-sm underline">
+							<a
+								href={resolve('/auth/forgot-password')}
+								class="ml-auto inline-block text-sm underline"
+							>
 								Forgot your password?
 							</a>
 						{/if}
 					</div>
-					<Input
-						id="password-{id}"
-						type="password"
-						bind:value={password}
-						required
-					/>
+					<Input id="password-{id}" type="password" bind:value={password} required />
 				</div>
 				<Button type="submit" class="w-full" disabled={isLoading}>
 					{#if isLoading}
@@ -147,9 +147,15 @@
 		</form>
 		<div class="mt-4 text-center text-sm">
 			{isSignUp ? 'Already have an account?' : "Don't have an account?"}
-			<button onclick={toggleMode} class="underline hover:text-primary">
-				{isSignUp ? 'Login' : 'Sign up'}
-			</button>
+			{#if isSignUp}
+				Already have an account?
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href={resolve('/auth/sign-in')} class="underline hover:text-primary">Login</a>
+			{:else}
+				Don't have an account?
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href={resolve('/auth/sign-up')} class="underline hover:text-primary">Sign up</a>
+			{/if}
 		</div>
 	</Card.Content>
 </Card.Root>
