@@ -59,9 +59,8 @@
 		"[&_.lc-grid-y-radial-line]:stroke-border [&_.lc-grid-y-radial-circle]:stroke-border",
 
 		// Legend adjustments
-		"[&_.lc-legend]:mx-auto [&_.lc-legend]:flex [&_.lc-legend]:justify-center [&_.lc-legend]:text-center",
 		"[&_.lc-legend-swatch-button]:items-center [&_.lc-legend-swatch-button]:gap-1.5",
-		"[&_.lc-legend-swatch-group]:items-center [&_.lc-legend-swatch-group]:gap-4 [&_.lc-legend-swatch-group]:justify-center",
+		"[&_.lc-legend-swatch-group]:items-center [&_.lc-legend-swatch-group]:gap-4",
 		"[&_.lc-legend-swatch]:size-2.5 [&_.lc-legend-swatch]:rounded-[2px]",
 
 		// Labels

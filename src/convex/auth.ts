@@ -29,6 +29,55 @@ export const createAuth = (
 		},
 		baseURL: siteUrl,
 		database: authComponent.adapter(ctx),
+		// User configuration
+		user: {
+			changeEmail: {
+				enabled: true,
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				sendChangeEmailVerification: async ({ user, newEmail, url, token }, _request) => {
+					const resendApiKey = process.env.RESEND_API_KEY;
+					const from = process.env.RESET_EMAIL_FROM || 'ModernStack SaaS <no-reply@yourdomain.com>';
+					if (!resendApiKey) {
+						console.error('RESEND_API_KEY not set. Unable to send email change verification.');
+						return;
+					}
+					try {
+						const res = await fetch('https://api.resend.com/emails', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								Authorization: `Bearer ${resendApiKey}`
+							},
+							body: JSON.stringify({
+								from,
+								to: user.email, // Send to current email to approve change
+								subject: 'Approve email change',
+								...(process.env.RESET_EMAIL_REPLY_TO
+									? { reply_to: process.env.RESET_EMAIL_REPLY_TO }
+									: {}),
+								html: `<p>Hello ${user.name ?? 'there'},</p>
+<p>We received a request to change your email address to <strong>${newEmail}</strong>.</p>
+<p>Click the button below to approve this change:</p>
+<p><a href="${url}" style="display:inline-block;padding:10px 16px;background:#111827;color:#fff;border-radius:6px;text-decoration:none">Approve Email Change</a></p>
+<p>If the button doesn't work, copy and paste this URL into your browser:</p>
+<p><a href="${url}">${url}</a></p>
+<p>If you didn't request this change, please ignore this email or contact support.</p>`
+							})
+						});
+						if (!res.ok) {
+							const text = await res.text();
+							console.error(
+								'Resend API error sending email change verification:',
+								res.status,
+								text
+							);
+						}
+					} catch (e) {
+						console.error('Failed to send email change verification:', e);
+					}
+				}
+			}
+		},
 		// Configure simple, non-verified email/password to get started
 		emailAndPassword: {
 			enabled: true,
@@ -38,7 +87,7 @@ export const createAuth = (
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			sendResetPassword: async ({ user, url, token }, _request) => {
 				const resendApiKey = process.env.RESEND_API_KEY;
-				const from = process.env.RESET_EMAIL_FROM || 'SaaS App <no-reply@yourdomain.com>';
+				const from = process.env.RESET_EMAIL_FROM || 'ModernStack SaaS <no-reply@yourdomain.com>';
 				if (!resendApiKey) {
 					console.error('RESEND_API_KEY not set. Unable to send reset password email.');
 					return;
@@ -89,6 +138,11 @@ export const createAuth = (
 export const getCurrentUser = query({
 	args: {},
 	handler: async (ctx) => {
-		return authComponent.getAuthUser(ctx);
+		try {
+			return await authComponent.getAuthUser(ctx);
+		} catch {
+			// Return null when unauthenticated
+			return null;
+		}
 	}
 });

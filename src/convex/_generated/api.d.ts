@@ -14,6 +14,7 @@ import type * as betterAuth__generated_server from '../betterAuth/_generated/ser
 import type * as betterAuth_adapter from '../betterAuth/adapter.js';
 import type * as betterAuth_auth from '../betterAuth/auth.js';
 import type * as http from '../http.js';
+import type * as storage from '../storage.js';
 
 import type { ApiFromModules, FilterApi, FunctionReference } from 'convex/server';
 
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
 	'betterAuth/adapter': typeof betterAuth_adapter;
 	'betterAuth/auth': typeof betterAuth_auth;
 	http: typeof http;
+	storage: typeof storage;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

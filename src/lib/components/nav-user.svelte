@@ -15,6 +15,15 @@
 
 	const sidebar = Sidebar.useSidebar();
 
+	// Get user initials from name
+	const initials = $derived.by(() => {
+		const nameParts = user.name?.split(' ') || [];
+		if (nameParts.length >= 2) {
+			return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+		}
+		return (user.name?.[0] || 'U').toUpperCase();
+	});
+
 	async function handleSignOut() {
 		try {
 			await authClient.signOut();
@@ -35,9 +44,9 @@
 						size="lg"
 						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 					>
-						<Avatar.Root class="size-8 rounded-lg grayscale">
+						<Avatar.Root class="size-8 rounded-lg">
 							<Avatar.Image src={user.avatar} alt={user.name} />
-							<Avatar.Fallback class="rounded-lg">CN</Avatar.Fallback>
+							<Avatar.Fallback class="rounded-lg">{initials}</Avatar.Fallback>
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
 							<span class="truncate font-medium">{user.name}</span>
@@ -59,7 +68,7 @@
 					<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 						<Avatar.Root class="size-8 rounded-lg">
 							<Avatar.Image src={user.avatar} alt={user.name} />
-							<Avatar.Fallback class="rounded-lg">CN</Avatar.Fallback>
+							<Avatar.Fallback class="rounded-lg">{initials}</Avatar.Fallback>
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
 							<span class="truncate font-medium">{user.name}</span>
