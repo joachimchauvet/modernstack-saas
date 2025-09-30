@@ -7,7 +7,7 @@
 	import * as Alert from '$lib/components/ui/alert/index.js';
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import { toast } from 'svelte-sonner';
-	import InfoIcon from '@tabler/icons-svelte/icons/info-circle';
+	import { Info } from '@lucide/svelte';
 
 	let currentPassword = $state('');
 	let newPassword = $state('');
@@ -68,7 +68,7 @@
 		<form onsubmit={handleChangePassword} class="space-y-4">
 			{#if error}
 				<Alert.Root variant="destructive">
-					<InfoIcon class="h-4 w-4" />
+					<Info class="h-4 w-4" />
 					<Alert.Title>Error</Alert.Title>
 					<Alert.Description>{error}</Alert.Description>
 				</Alert.Root>
@@ -122,7 +122,7 @@
 			</div>
 
 			<Alert.Root>
-				<InfoIcon class="h-4 w-4" />
+				<Info class="h-4 w-4" />
 				<Alert.Title>Security Notice</Alert.Title>
 				<Alert.Description>
 					Changing your password will require you to sign in again on all devices unless you uncheck

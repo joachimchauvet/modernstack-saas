@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TrendingUpIcon from '@tabler/icons-svelte/icons/trending-up';
+	import { TrendingUp } from '@lucide/svelte';
 	import { AreaChart } from 'layerchart';
 	import { scaleUtc } from 'd3-scale';
 	import { curveNatural } from 'd3-shape';
@@ -106,7 +106,7 @@
 				<div class="grid gap-2">
 					<div class="flex gap-2 leading-none font-medium">
 						Trending up by 5.2% this month
-						<TrendingUpIcon class="size-4" />
+						<TrendingUp class="size-4" />
 					</div>
 					<div class="text-muted-foreground">
 						Showing total visitors for the last 6 months. This is just some random text to test the

@@ -4,7 +4,7 @@
 	const resolveLink = (url: string) => (resolve as unknown as (u: string) => string)(url);
 	import type { WithoutChildren } from '$lib/utils.js';
 	import type { ComponentProps } from 'svelte';
-	import type { Icon } from '@tabler/icons-svelte';
+	import type { Icon } from '@lucide/svelte';
 
 	let {
 		items,

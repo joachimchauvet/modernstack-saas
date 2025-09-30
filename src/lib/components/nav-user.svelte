@@ -1,9 +1,5 @@
 <script lang="ts">
-	import CreditCardIcon from '@tabler/icons-svelte/icons/credit-card';
-	import DotsVerticalIcon from '@tabler/icons-svelte/icons/dots-vertical';
-	import LogoutIcon from '@tabler/icons-svelte/icons/logout';
-	import NotificationIcon from '@tabler/icons-svelte/icons/notification';
-	import UserCircleIcon from '@tabler/icons-svelte/icons/user-circle';
+	import { CreditCard, EllipsisVertical, LogOut, Bell, CircleUser } from '@lucide/svelte';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
@@ -54,7 +50,7 @@
 								{user.email}
 							</span>
 						</div>
-						<DotsVerticalIcon class="ml-auto size-4" />
+						<EllipsisVertical class="ml-auto size-4" />
 					</Sidebar.MenuButton>
 				{/snippet}
 			</DropdownMenu.Trigger>
@@ -81,21 +77,21 @@
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
 					<DropdownMenu.Item>
-						<UserCircleIcon />
+						<CircleUser />
 						Account
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
-						<CreditCardIcon />
+						<CreditCard />
 						Billing
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
-						<NotificationIcon />
+						<Bell />
 						Notifications
 					</DropdownMenu.Item>
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Item onclick={handleSignOut}>
-					<LogoutIcon />
+					<LogOut />
 					Log out
 				</DropdownMenu.Item>
 			</DropdownMenu.Content>

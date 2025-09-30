@@ -7,8 +7,7 @@
 	import * as Alert from '$lib/components/ui/alert/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { toast } from 'svelte-sonner';
-	import InfoIcon from '@tabler/icons-svelte/icons/info-circle';
-	import CheckCircleIcon from '@tabler/icons-svelte/icons/circle-check';
+	import { Info, CircleCheck } from '@lucide/svelte';
 
 	interface Props {
 		user: {
@@ -82,7 +81,7 @@
 					<Input value={currentEmail} disabled class="bg-muted" />
 					{#if isEmailVerified}
 						<Badge variant="secondary" class="flex items-center gap-1">
-							<CheckCircleIcon class="h-3 w-3" />
+							<CircleCheck class="h-3 w-3" />
 							Verified
 						</Badge>
 					{:else}
@@ -94,7 +93,7 @@
 			<form onsubmit={handleChangeEmail} class="space-y-4">
 				{#if error}
 					<Alert.Root variant="destructive">
-						<InfoIcon class="h-4 w-4" />
+						<Info class="h-4 w-4" />
 						<Alert.Title>Error</Alert.Title>
 						<Alert.Description>{error}</Alert.Description>
 					</Alert.Root>
@@ -114,7 +113,7 @@
 
 				{#if isEmailVerified}
 					<Alert.Root>
-						<InfoIcon class="h-4 w-4" />
+						<Info class="h-4 w-4" />
 						<Alert.Title>Verification Required</Alert.Title>
 						<Alert.Description>
 							A verification email will be sent to your current email address. You must approve the
@@ -123,7 +122,7 @@
 					</Alert.Root>
 				{:else}
 					<Alert.Root>
-						<InfoIcon class="h-4 w-4" />
+						<Info class="h-4 w-4" />
 						<Alert.Title>Email Not Verified</Alert.Title>
 						<Alert.Description>
 							Your current email is not verified. The new email will be updated immediately without

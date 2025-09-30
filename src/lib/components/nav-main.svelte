@@ -1,8 +1,7 @@
 <script lang="ts">
-	import CirclePlusFilledIcon from '@tabler/icons-svelte/icons/circle-plus-filled';
+	import { CirclePlus, type Icon } from '@lucide/svelte';
 	// removed Inbox button
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import type { Icon } from '@tabler/icons-svelte';
 
 	let { items }: { items: { title: string; url: string; icon?: Icon }[] } = $props();
 </script>
@@ -15,7 +14,7 @@
 					class="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
 					tooltipContent="Quick create"
 				>
-					<CirclePlusFilledIcon />
+					<CirclePlus />
 					<span>Quick Create</span>
 				</Sidebar.MenuButton>
 			</Sidebar.MenuItem>

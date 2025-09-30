@@ -1,9 +1,5 @@
 <script lang="ts">
-	import DotsIcon from '@tabler/icons-svelte/icons/dots';
-	import FolderIcon from '@tabler/icons-svelte/icons/folder';
-	import Share3Icon from '@tabler/icons-svelte/icons/share-3';
-	import TrashIcon from '@tabler/icons-svelte/icons/trash';
-	import type { Icon } from '@tabler/icons-svelte';
+	import { Ellipsis, Folder, Share2, Trash2, type Icon } from '@lucide/svelte';
 
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
@@ -50,7 +46,7 @@
 								showOnHover
 								class="rounded-sm data-[state=open]:bg-accent"
 							>
-								<DotsIcon />
+								<Ellipsis />
 								<span class="sr-only">More</span>
 							</Sidebar.MenuAction>
 						{/snippet}
@@ -61,16 +57,16 @@
 						align={sidebar.isMobile ? 'end' : 'start'}
 					>
 						<DropdownMenu.Item>
-							<FolderIcon />
+							<Folder />
 							<span>Open</span>
 						</DropdownMenu.Item>
 						<DropdownMenu.Item>
-							<Share3Icon />
+							<Share2 />
 							<span>Share</span>
 						</DropdownMenu.Item>
 						<DropdownMenu.Separator />
 						<DropdownMenu.Item variant="destructive">
-							<TrashIcon />
+							<Trash2 />
 							<span>Delete</span>
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
@@ -79,7 +75,7 @@
 		{/each}
 		<Sidebar.MenuItem>
 			<Sidebar.MenuButton class="text-sidebar-foreground/70">
-				<DotsIcon class="text-sidebar-foreground/70" />
+				<Ellipsis class="text-sidebar-foreground/70" />
 				<span>More</span>
 			</Sidebar.MenuButton>
 		</Sidebar.MenuItem>

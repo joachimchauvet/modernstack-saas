@@ -7,7 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import { api } from '$convex/_generated/api.js';
 	import { useConvexClient } from 'convex-svelte';
-	import UploadIcon from '@tabler/icons-svelte/icons/upload';
+	import { Upload } from '@lucide/svelte';
 
 	interface Props {
 		user: {
@@ -204,7 +204,7 @@
 								onclick={handleUploadImage}
 								disabled={!selectedFile || isLoading}
 							>
-								<UploadIcon class="h-4 w-4" />
+								<Upload class="h-4 w-4" />
 							</Button>
 						</div>
 						<p id="file-helper" class="text-sm text-muted-foreground">

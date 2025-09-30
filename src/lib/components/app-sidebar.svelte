@@ -1,15 +1,17 @@
 <script lang="ts">
-	import CameraIcon from '@tabler/icons-svelte/icons/camera';
-	import ChartBarIcon from '@tabler/icons-svelte/icons/chart-bar';
-	import DashboardIcon from '@tabler/icons-svelte/icons/dashboard';
-	import FileAiIcon from '@tabler/icons-svelte/icons/file-ai';
-	import FileDescriptionIcon from '@tabler/icons-svelte/icons/file-description';
-	import FolderIcon from '@tabler/icons-svelte/icons/folder';
-	import HelpIcon from '@tabler/icons-svelte/icons/help';
-	import InnerShadowTopIcon from '@tabler/icons-svelte/icons/inner-shadow-top';
-	import ReportIcon from '@tabler/icons-svelte/icons/report';
-	import SettingsIcon from '@tabler/icons-svelte/icons/settings';
-	import UsersIcon from '@tabler/icons-svelte/icons/users';
+	import {
+		Camera,
+		ChartColumn,
+		LayoutDashboard,
+		Sparkles,
+		FileText,
+		Folder,
+		CircleHelp,
+		Box,
+		ChartLine,
+		Settings,
+		Users
+	} from '@lucide/svelte';
 	import NavAdmin from './nav-admin.svelte';
 	import NavMain from './nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
@@ -35,22 +37,22 @@
 		{
 			title: 'Dashboard',
 			url: '/dashboard',
-			icon: DashboardIcon
+			icon: LayoutDashboard
 		},
 		{
 			title: 'Team',
 			url: '/team',
-			icon: UsersIcon
+			icon: Users
 		},
 		{
 			title: 'Analytics',
 			url: '/analytics',
-			icon: ChartBarIcon
+			icon: ChartColumn
 		},
 		{
 			title: 'Projects',
 			url: '/projects',
-			icon: FolderIcon
+			icon: Folder
 		}
 	];
 
@@ -60,7 +62,7 @@
 		navClouds: [
 			{
 				title: 'Capture',
-				icon: CameraIcon,
+				icon: Camera,
 				isActive: true,
 				url: '#',
 				items: [
@@ -76,7 +78,7 @@
 			},
 			{
 				title: 'Proposal',
-				icon: FileDescriptionIcon,
+				icon: FileText,
 				url: '#',
 				items: [
 					{
@@ -91,7 +93,7 @@
 			},
 			{
 				title: 'Prompts',
-				icon: FileAiIcon,
+				icon: Sparkles,
 				url: '#',
 				items: [
 					{
@@ -109,24 +111,24 @@
 			{
 				title: 'Settings',
 				url: '/settings',
-				icon: SettingsIcon
+				icon: Settings
 			},
 			{
 				title: 'Get Help',
 				url: '#',
-				icon: HelpIcon
+				icon: CircleHelp
 			}
 		],
 		admin: [
 			{
 				name: 'Users',
 				url: '#',
-				icon: UsersIcon
+				icon: Users
 			},
 			{
 				name: 'Analytics',
 				url: '#',
-				icon: ReportIcon
+				icon: ChartLine
 			}
 		]
 	}));
@@ -141,7 +143,7 @@
 				<Sidebar.MenuButton class="data-[slot=sidebar-menu-button]:!p-1.5">
 					{#snippet child({ props })}
 						<a href={resolve('/dashboard')} {...props}>
-							<InnerShadowTopIcon class="!size-5" />
+							<Box class="!size-5" />
 							<span class="text-base font-semibold">ModernStack SaaS</span>
 						</a>
 					{/snippet}
