@@ -7,9 +7,8 @@ env:
   # PUBLIC_* vars - required for client code
   PUBLIC_CONVEX_URL: 'https://fake-convex-url.convex.cloud'
   PUBLIC_CONVEX_SITE_URL: 'https://fake-convex-site-url.convex.site'
-  PUBLIC_SITE_URL: 'https://fake-site-url.pages.dev'
   # SITE_URL - imported in hooks.server.ts and admin/+layout.server.ts
-  SITE_URL: 'https://fake-site-url.pages.dev'
+  SITE_URL: 'https://fake-site-url.com'
 
 jobs:
   lint_and_format:

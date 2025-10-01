@@ -1,0 +1,12 @@
+{
+	"$schema": "https://developers.cloudflare.com/schemas/wrangler.json",
+	"name": "modernstack-saas",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2025-01-01",
+	"compatibility_flags": ["nodejs_compat"],
+
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare"
+	}
+}

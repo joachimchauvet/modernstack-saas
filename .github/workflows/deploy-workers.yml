@@ -1,4 +1,4 @@
-name: Cloudflare Pages
+name: Deploy to Cloudflare Workers
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy to Cloudflare Pages
+    name: Deploy to Cloudflare Workers
     permissions:
       contents: read
       deployments: write
@@ -39,63 +39,58 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        run: pnpm run build
         env:
+          # PUBLIC_* variables - embedded in the client bundle
           PUBLIC_CONVEX_URL: ${{ vars.PUBLIC_CONVEX_URL }}
           PUBLIC_CONVEX_SITE_URL: ${{ vars.PUBLIC_CONVEX_SITE_URL }}
+          # SITE_URL - required for build (imported from $env/static/private)
           SITE_URL: ${{ vars.SITE_URL || 'https://modernstack-saas.com' }}
-        run: pnpm run build
 
-      - name: Set Cloudflare Node Version
-        run: echo "20" > ./.svelte-kit/cloudflare/.node-version
-
-      - name: Extract Repository Name
-        id: extract_repo
-        shell: bash
-        run: |
-          full_repo_name="${{ github.repository }}"
-          repo_name="${full_repo_name##*/}"
-          echo "Repository name: $repo_name"
-          echo "repo_name=$repo_name" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy to Cloudflare Pages
-        id: cloudflare-deploy
+      - name: Deploy to Cloudflare Workers
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./.svelte-kit/cloudflare --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME || steps.extract_repo.outputs.repo_name }} --branch=${{ github.ref_name }}
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: ${{ github.ref == 'refs/heads/main' && 'deploy --config wrangler.jsonc' || format('versions upload --config wrangler.jsonc --tag {0} --message "Deploy from {1}"', github.run_id, github.ref) }}
+          secrets: |
+            SITE_URL
+            BETTER_AUTH_SECRET
+            BETTER_AUTH_URL
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://modernstack-saas.com' }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL || vars.SITE_URL || 'https://modernstack-saas.com' }}
 
-      - name: Add or Update PR Comment with Preview URL
+      - name: Add PR Comment with Worker URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const deploymentUrl = '${{ steps.cloudflare-deploy.outputs.deployment-url }}';
-            const aliasUrl = '${{ steps.cloudflare-deploy.outputs.pages-deployment-alias-url }}';
             const issueNumber = context.issue.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const marker = '<!-- pr-deploy-comment -->';
+            const marker = '<!-- worker-deploy-comment -->';
+            const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME;
+            const runId = '${{ github.run_id }}';
+            const sha = '${{ github.sha }}';
 
-            let commentBody = `${marker}\n🚀 Preview deployment is ready!\n\n`;
-            let hasUrls = false;
+            // Get the actual deployment URL from wrangler-action output
+            const deploymentUrl = '${{ steps.deploy.outputs.deployment-url }}';
+            const productionUrl = 'https://modernstack-saas.workers.dev';
 
-            if (deploymentUrl) {
-              commentBody += `🔗 **Unique deployment URL**: ${deploymentUrl}\n\n`;
-              hasUrls = true;
-            }
-            if (aliasUrl) {
-              commentBody += `🔗 **Branch preview URL (${process.env.GITHUB_HEAD_REF})**: ${aliasUrl}\n\n`;
-              hasUrls = true;
-            }
+            const commentBody = `${marker}
+            🚀 **Cloudflare Workers deployment ready!**
 
-            if (!hasUrls) {
-              console.log('No deployment URLs found, skipping comment update/creation.');
-              return;
-            }
+            🔗 **Deployment URL**: ${deploymentUrl || productionUrl}
+            📝 **Commit**: ${sha.substring(0, 8)}
+            🌿 **Branch**: ${branch}
 
+            ${branch === 'main' ? '✅ Production deployment' : '⚠️ Development deployment'}`;
+
+            // Find the existing comment
             const { data: comments } = await github.rest.issues.listComments({
               owner,
               repo,
@@ -104,6 +99,7 @@ jobs:
             const existingComment = comments.find(comment => comment.body.includes(marker));
 
             if (existingComment) {
+              // Update the existing comment
               console.log(`Updating existing deployment comment (ID: ${existingComment.id})`);
               await github.rest.issues.updateComment({
                 owner,
@@ -112,6 +108,7 @@ jobs:
                 body: commentBody
               });
             } else {
+              // Create a new comment
               console.log('Creating new deployment comment.');
               await github.rest.issues.createComment({
                 owner,
