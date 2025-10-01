@@ -17,7 +17,7 @@
 			price?: number;
 			interval?: string;
 			feature_id?: string;
-			included_usage?: number;
+			included_usage?: number | 'inf';
 		}>;
 	}
 

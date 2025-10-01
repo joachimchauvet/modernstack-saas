@@ -46,7 +46,9 @@
 			</Tabs.List>
 
 			<Tabs.Content value="account" class="space-y-6">
-				<AccountSettings {user} />
+				{#if user}
+					<AccountSettings {user} />
+				{/if}
 			</Tabs.Content>
 
 			<Tabs.Content value="password" class="space-y-6">
@@ -54,7 +56,9 @@
 			</Tabs.Content>
 
 			<Tabs.Content value="email" class="space-y-6">
-				<EmailSettings {user} />
+				{#if user}
+					<EmailSettings {user} />
+				{/if}
 			</Tabs.Content>
 		</Tabs.Root>
 	</div>

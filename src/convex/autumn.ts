@@ -4,7 +4,8 @@ import { authComponent } from './auth';
 
 export const autumn = new Autumn(components.autumn, {
 	secretKey: process.env.AUTUMN_SECRET_KEY ?? '',
-	identify: async (ctx) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	identify: async (ctx: any) => {
 		try {
 			const user = await authComponent.getAuthUser(ctx);
 			if (!user) return null;

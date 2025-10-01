@@ -6,7 +6,7 @@
 		Sparkles,
 		FileText,
 		Folder,
-		CircleHelp,
+		CircleQuestionMark,
 		Box,
 		ChartLine,
 		Settings,
@@ -41,17 +41,17 @@
 		},
 		{
 			title: 'Team',
-			url: '/team',
+			url: '#',
 			icon: Users
 		},
 		{
 			title: 'Analytics',
-			url: '/analytics',
+			url: '#',
 			icon: ChartColumn
 		},
 		{
 			title: 'Projects',
-			url: '/projects',
+			url: '#',
 			icon: Folder
 		}
 	];
@@ -116,13 +116,13 @@
 			{
 				title: 'Get Help',
 				url: '#',
-				icon: CircleHelp
+				icon: CircleQuestionMark
 			}
 		],
 		admin: [
 			{
 				name: 'Users',
-				url: '#',
+				url: '/admin/users',
 				icon: Users
 			},
 			{
@@ -142,7 +142,7 @@
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton class="data-[slot=sidebar-menu-button]:!p-1.5">
 					{#snippet child({ props })}
-						<a href={resolve('/dashboard')} {...props}>
+						<a href={resolve('/')} {...props}>
 							<Box class="!size-5" />
 							<span class="text-base font-semibold">ModernStack SaaS</span>
 						</a>

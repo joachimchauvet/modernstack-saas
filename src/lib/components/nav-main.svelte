@@ -1,9 +1,15 @@
 <script lang="ts">
-	import { CirclePlus, type Icon } from '@lucide/svelte';
+	import { CirclePlus } from '@lucide/svelte';
+	import type { Component } from 'svelte';
+	import type { IconProps } from '@lucide/svelte';
 	// removed Inbox button
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import { resolve as _resolve } from '$app/paths';
 
-	let { items }: { items: { title: string; url: string; icon?: Icon }[] } = $props();
+	let { items }: { items: { title: string; url: string; icon?: Component<IconProps> }[] } =
+		$props();
+
+	const resolveLink = (url: string) => (_resolve as unknown as (u: string) => string)(url);
 </script>
 
 <Sidebar.Group>
@@ -23,10 +29,32 @@
 			{#each items as item (item.title)}
 				<Sidebar.MenuItem>
 					<Sidebar.MenuButton tooltipContent={item.title}>
-						{#if item.icon}
-							<item.icon />
-						{/if}
-						<span>{item.title}</span>
+						{#snippet child({ props })}
+							{#if item.url && item.url.startsWith('/')}
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+								<a href={resolveLink(item.url)} {...props}>
+									{#if item.icon}
+										<item.icon />
+									{/if}
+									<span>{item.title}</span>
+								</a>
+							{:else if item.url && (item.url.startsWith('http://') || item.url.startsWith('https://') || item.url.startsWith('mailto:') || item.url.startsWith('tel:'))}
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+								<a href={item.url} target="_blank" rel="noopener noreferrer" {...props}>
+									{#if item.icon}
+										<item.icon />
+									{/if}
+									<span>{item.title}</span>
+								</a>
+							{:else}
+								<span {...props}>
+									{#if item.icon}
+										<item.icon />
+									{/if}
+									<span>{item.title}</span>
+								</span>
+							{/if}
+						{/snippet}
 					</Sidebar.MenuButton>
 				</Sidebar.MenuItem>
 			{/each}

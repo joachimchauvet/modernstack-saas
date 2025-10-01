@@ -13,7 +13,7 @@
 		user: {
 			name?: string;
 			email?: string;
-			image?: string;
+			image?: string | null;
 		} | null;
 	}
 
@@ -77,7 +77,7 @@
 			const imageUrl = await convexClient.mutation(api.storage.getImageUrl, { storageId });
 
 			// Step 4: Update the image state
-			image = imageUrl;
+			image = imageUrl || '';
 			selectedFile = null;
 
 			// Reset file input

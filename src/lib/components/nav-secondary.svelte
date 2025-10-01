@@ -3,13 +3,13 @@
 	import { resolve } from '$app/paths';
 	const resolveLink = (url: string) => (resolve as unknown as (u: string) => string)(url);
 	import type { WithoutChildren } from '$lib/utils.js';
-	import type { ComponentProps } from 'svelte';
-	import type { Icon } from '@lucide/svelte';
+	import type { ComponentProps, Component } from 'svelte';
+	import type { IconProps } from '@lucide/svelte';
 
 	let {
 		items,
 		...restProps
-	}: { items: { title: string; url: string; icon: Icon }[] } & WithoutChildren<
+	}: { items: { title: string; url: string; icon: Component<IconProps> }[] } & WithoutChildren<
 		ComponentProps<typeof Sidebar.Group>
 	> = $props();
 </script>
