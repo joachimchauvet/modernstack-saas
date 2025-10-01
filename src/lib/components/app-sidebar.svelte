@@ -10,7 +10,8 @@
 		Box,
 		ChartLine,
 		Settings,
-		Users
+		Users,
+		CreditCard
 	} from '@lucide/svelte';
 	import NavAdmin from './nav-admin.svelte';
 	import NavMain from './nav-main.svelte';
@@ -38,6 +39,11 @@
 			title: 'Dashboard',
 			url: '/dashboard',
 			icon: LayoutDashboard
+		},
+		{
+			title: 'Billing',
+			url: '/billing',
+			icon: CreditCard
 		},
 		{
 			title: 'Team',
