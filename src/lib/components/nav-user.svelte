@@ -76,11 +76,11 @@
 				</DropdownMenu.Label>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
-					<DropdownMenu.Item>
+					<DropdownMenu.Item onSelect={() => goto(resolve('/settings'))}>
 						<CircleUser />
 						Account
 					</DropdownMenu.Item>
-					<DropdownMenu.Item>
+					<DropdownMenu.Item onSelect={() => goto(resolve('/billing'))}>
 						<CreditCard />
 						Billing
 					</DropdownMenu.Item>

@@ -9,10 +9,12 @@
  */
 
 import type * as auth from '../auth.js';
+import type * as autumn from '../autumn.js';
 import type * as betterAuth__generated_api from '../betterAuth/_generated/api.js';
 import type * as betterAuth__generated_server from '../betterAuth/_generated/server.js';
 import type * as betterAuth_adapter from '../betterAuth/adapter.js';
 import type * as betterAuth_auth from '../betterAuth/auth.js';
+import type * as billing from '../billing.js';
 import type * as http from '../http.js';
 import type * as storage from '../storage.js';
 
@@ -28,10 +30,12 @@ import type { ApiFromModules, FilterApi, FunctionReference } from 'convex/server
  */
 declare const fullApi: ApiFromModules<{
 	auth: typeof auth;
+	autumn: typeof autumn;
 	'betterAuth/_generated/api': typeof betterAuth__generated_api;
 	'betterAuth/_generated/server': typeof betterAuth__generated_server;
 	'betterAuth/adapter': typeof betterAuth_adapter;
 	'betterAuth/auth': typeof betterAuth_auth;
+	billing: typeof billing;
 	http: typeof http;
 	storage: typeof storage;
 }>;
@@ -848,4 +852,5 @@ export declare const components: {
 			>;
 		};
 	};
+	autumn: {};
 };
