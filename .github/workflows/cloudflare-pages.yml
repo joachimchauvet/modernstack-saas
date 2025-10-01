@@ -1,0 +1,124 @@
+name: Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Pages
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    environment:
+      name: ${{ (github.ref == 'refs/heads/main' && 'production') || 'development' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        env:
+          PUBLIC_CONVEX_URL: ${{ vars.PUBLIC_CONVEX_URL }}
+          PUBLIC_CONVEX_SITE_URL: ${{ vars.PUBLIC_CONVEX_SITE_URL }}
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://dev.modernstack-saas.pages.dev' }}
+          PUBLIC_ENVIRONMENT: ${{ (github.ref == 'refs/heads/main' && 'production') || 'development' }}
+          SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://dev.modernstack-saas.pages.dev' }}
+        run: pnpm run build
+
+      - name: Set Cloudflare Node Version
+        run: echo "20" > ./.svelte-kit/cloudflare/.node-version
+
+      - name: Extract Repository Name
+        id: extract_repo
+        shell: bash
+        run: |
+          full_repo_name="${{ github.repository }}"
+          repo_name="${full_repo_name##*/}"
+          echo "Repository name: $repo_name"
+          echo "repo_name=$repo_name" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to Cloudflare Pages
+        id: cloudflare-deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./.svelte-kit/cloudflare --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME || steps.extract_repo.outputs.repo_name }} --branch=${{ github.ref_name }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add or Update PR Comment with Preview URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const deploymentUrl = '${{ steps.cloudflare-deploy.outputs.deployment-url }}';
+            const aliasUrl = '${{ steps.cloudflare-deploy.outputs.pages-deployment-alias-url }}';
+            const issueNumber = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const marker = '<!-- pr-deploy-comment -->';
+
+            let commentBody = `${marker}\n🚀 Preview deployment is ready!\n\n`;
+            let hasUrls = false;
+
+            if (deploymentUrl) {
+              commentBody += `🔗 **Unique deployment URL**: ${deploymentUrl}\n\n`;
+              hasUrls = true;
+            }
+            if (aliasUrl) {
+              commentBody += `🔗 **Branch preview URL (${process.env.GITHUB_HEAD_REF})**: ${aliasUrl}\n\n`;
+              hasUrls = true;
+            }
+
+            if (!hasUrls) {
+              console.log('No deployment URLs found, skipping comment update/creation.');
+              return;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: issueNumber,
+            });
+            const existingComment = comments.find(comment => comment.body.includes(marker));
+
+            if (existingComment) {
+              console.log(`Updating existing deployment comment (ID: ${existingComment.id})`);
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              console.log('Creating new deployment comment.');
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: commentBody
+              });
+            }

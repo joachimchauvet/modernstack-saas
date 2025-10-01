@@ -11,5 +11,9 @@ bun.lockb
 # UI Components
 src/lib/components/ui/
 
+# Generated Files
+src/convex/_generated/
+src/convex/*/_generated/
+
 # Miscellaneous
 /static/
