@@ -7,11 +7,11 @@ A production-ready SaaS starter template built for the [Modern Stack Hackathon](
 - **[SvelteKit](https://kit.svelte.dev/)** with **[Svelte 5](https://svelte.dev/)** - Modern, reactive frontend framework
 - **[Convex](https://convex.dev/)** - Real-time backend database with serverless functions
 - **[Better Auth](https://www.better-auth.com/)** - Comprehensive authentication solution with email/password and OAuth
+- **[Autumn](https://useautumn.com/)** - Stripe billing wrapper for seamless payment integration
 - **[Resend](https://resend.com/)** - Transactional email service for password resets and email verification
 - **[shadcn-svelte](https://www.shadcn-svelte.com/)** - Beautiful, accessible UI components
 - **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[Lucide](https://lucide.dev/)** - Beautiful icon library
-- **[Autumn](https://useautumn.com/)** - Stripe billing wrapper for seamless payment integration
 
 ## Features
 
@@ -39,6 +39,19 @@ A production-ready SaaS starter template built for the [Modern Stack Hackathon](
   - Type-safe database queries
   - Hot module replacement
   - ESLint & Prettier configured
+  - LLM-focused documentation in `/docs` + `CLAUDE.md` for AI-assisted development
+  - GitHub Actions CI/CD for code quality checks and Cloudflare deployments
+
+## Roadmap
+
+Planned features and improvements:
+
+- [ ] **OAuth Support** - Complete Google OAuth integration and add additional providers
+- [ ] **Multi-tenancy / Team Support** - Organizations, team invites, and role-based permissions
+- [ ] **Rate Limiting** - API rate limiting and request throttling
+- [ ] **Stripe Stats in Admin Dashboard** - Revenue analytics and subscription metrics
+- [ ] **Welcome Email Template** - Branded welcome emails for new users
+- [ ] **E2E Tests with Playwright** - Comprehensive end-to-end testing suite
 
 ## Getting Started
 
@@ -161,6 +174,35 @@ pnpm convex deploy
 
 3. Deploy your frontend to your chosen platform
 
+## Documentation
+
+This project includes comprehensive documentation optimized for LLM consumption:
+
+- **`/docs`** - Framework-specific guides and best practices
+  - `svelte/` - Svelte 5 runes, reactivity, templating, and state management
+  - `better_auth.md` - Authentication setup and patterns
+  - `convex.md` - Backend queries, mutations, and real-time data
+  - `tailwind_v4.md` - Styling with Tailwind CSS v4
+  - `autumn.md` - Billing and subscription management
+
+## CI/CD
+
+GitHub Actions workflows are included for:
+
+- **Code Quality** (`.github/workflows/code-quality.yml`) - Linting, formatting, type checking, and spell checking on every push/PR
+- **Cloudflare Pages** (`.github/workflows/cloudflare-pages.yml`) - Automatic deployments with preview URLs for pull requests
+- **Cloudflare Workers** (`.github/workflows/deploy-workers.yml`) - Alternative deployment target with more features
+
 ## Built for Modern Stack Hackathon
 
 This starter template was created for the [Convex Modern Stack Hackathon](https://www.convex.dev/hackathons/modernstack), showcasing the power of combining modern web technologies to build production-ready SaaS applications.
+
+---
+
+## 🚀 Ready to Ship?
+
+**Stop plumbing, start vibing.** Modern stack, zero setup headaches.
+
+✓ Auth • ✓ Payments • ✓ Real-time DB • ✓ Your brilliant idea? **Add here →**
+
+[**Fork & Ship on GitHub**](https://github.com/joachimchauvet/modernstack-saas) • MIT Licensed • Built for developers

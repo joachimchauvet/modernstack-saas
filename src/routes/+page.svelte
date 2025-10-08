@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Accordion from '$lib/components/ui/accordion/index.js';
 	import {
 		Rocket,
 		Shield,
@@ -197,6 +198,125 @@
 					Ship globally with the Cloudflare adapter, or switch to Vercel, Netlify, and other
 					adapters in minutes.
 				</p>
+			</div>
+		</div>
+
+		<div class="mt-24">
+			<div class="mx-auto max-w-3xl text-center">
+				<h2 class="text-3xl font-semibold tracking-tight">Frequently Asked Questions</h2>
+				<p class="mt-2 text-muted-foreground">
+					Everything you need to know about the ModernStack SaaS Starter
+				</p>
+			</div>
+
+			<div class="mx-auto mt-12 max-w-3xl">
+				<Accordion.Root type="multiple" class="w-full">
+					<Accordion.Item value="item-1">
+						<Accordion.Trigger>What's included in this starter template?</Accordion.Trigger>
+						<Accordion.Content>
+							The starter includes a complete authentication system with Better Auth (email/password
+							and OAuth), user roles with an admin dashboard, a real-time Convex backend,
+							Stripe-ready billing integration with Autumn, a responsive dashboard with charts and
+							data tables, user settings pages, and a modern UI built with shadcn-svelte and
+							Tailwind CSS v4. Everything is fully typed with TypeScript.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-2">
+						<Accordion.Trigger>Is this template free to use?</Accordion.Trigger>
+						<Accordion.Content>
+							Yes! This starter template is completely free and open source under the MIT license.
+							You can use it for personal projects, commercial applications, or modify it however
+							you need. The hosting is also free to start — Convex and Cloudflare both offer
+							generous free tiers perfect for launching and scaling your SaaS.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-3">
+						<Accordion.Trigger>How do I deploy this to production?</Accordion.Trigger>
+						<Accordion.Content>
+							Deployment is straightforward: first deploy your Convex backend with <code
+								class="rounded bg-muted px-1.5 py-0.5 text-sm">pnpm convex deploy</code
+							>, then deploy your frontend to Cloudflare Pages, Vercel, or Netlify. The template
+							includes GitHub Actions workflows for automated deployments. Full deployment
+							instructions are available in the README.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-4">
+						<Accordion.Trigger>What backend features does Convex provide?</Accordion.Trigger>
+						<Accordion.Content>
+							Convex provides a real-time database with automatic subscriptions, serverless
+							functions for your backend logic, file storage for uploads like user avatars, and
+							scheduled functions for background tasks. All database queries are fully typed, and
+							changes sync automatically to your frontend without manual polling or websocket
+							management.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-5">
+						<Accordion.Trigger>Can I customize the UI components?</Accordion.Trigger>
+						<Accordion.Content>
+							Absolutely! All UI components are built with shadcn-svelte, which means the source
+							code lives in your project under <code class="rounded bg-muted px-1.5 py-0.5 text-sm"
+								>src/lib/components/ui</code
+							>. I've intentionally kept components as close to vanilla shadcn-svelte as possible,
+							giving you complete freedom to style them however you wish. The components are built
+							on top of bits-ui for accessibility and Tailwind CSS for styling.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-6">
+						<Accordion.Trigger>How do I add Stripe payments?</Accordion.Trigger>
+						<Accordion.Content>
+							The template is pre-configured with Autumn, a Stripe billing wrapper. I was initially
+							planning to use the Better Auth Stripe plugin but went with Autumn because of the
+							Modern Stack Hackathon sponsor. However, it is so nice that I'll probably stick with
+							it! To get started, create a free Autumn account and add your Autumn API key to your
+							Convex environment variables. This lets you test the billing flows immediately. When
+							you're ready to accept live payments, connect your Stripe account to Autumn. The
+							billing page and subscription management UI are already included in the template.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-7">
+						<Accordion.Trigger>What about email functionality?</Accordion.Trigger>
+						<Accordion.Content>
+							The template uses Resend for transactional emails like password resets and email
+							verification. Resend offers 3,000 free emails per month and has a simple API. Just add
+							your Resend API key to the environment variables, and the email flows will work
+							automatically. You can customize the email templates in the Convex functions.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-8">
+						<Accordion.Trigger
+							>Is there documentation for working with this stack?</Accordion.Trigger
+						>
+						<Accordion.Content>
+							Yes! The project includes comprehensive documentation in the <code
+								class="rounded bg-muted px-1.5 py-0.5 text-sm">/docs</code
+							>
+							folder, optimized for both developers and AI assistants. You'll find guides for Svelte
+							5 runes, Convex patterns, Better Auth setup, Tailwind v4, and Autumn billing. There's also
+							a <code class="rounded bg-muted px-1.5 py-0.5 text-sm">CLAUDE.md</code> file for AI-assisted
+							development.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-9">
+						<Accordion.Trigger>Is this template going to be maintained?</Accordion.Trigger>
+						<Accordion.Content>
+							Yes! I plan to keep polishing the starter template and will probably publish a few
+							SaaS products using it in the near future. You can follow the journey at <a
+								href="https://x.com/joachimchauvet"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="underline hover:text-primary">@joachimchauvet</a
+							> for the latest updates, new features, and improvements.
+						</Accordion.Content>
+					</Accordion.Item>
+				</Accordion.Root>
 			</div>
 		</div>
 	</div>
