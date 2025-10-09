@@ -139,10 +139,10 @@ let { error = null, customPrompt = '' }: Props = $props();
 ## Shadcn Color Conventions
 
 - Use `background` and `foreground` convention for colors.
-- Define CSS variables without color space function:
+- Define CSS variables with oklch color space function:
   ```css
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
   ```
 - Usage example:
   ```svelte
