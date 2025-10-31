@@ -46,7 +46,7 @@ A production-ready SaaS starter template built for the [Modern Stack Hackathon](
 
 Planned features and improvements:
 
-- [ ] **OAuth Support** - Complete Google OAuth integration and add additional providers
+- [x] **OAuth Support** - Complete social provider integration and example with Google OAuth
 - [ ] **Multi-tenancy / Team Support** - Organizations, team invites, and role-based permissions
 - [ ] **Rate Limiting** - API rate limiting and request throttling
 - [ ] **Stripe Stats in Admin Dashboard** - Revenue analytics and subscription metrics
