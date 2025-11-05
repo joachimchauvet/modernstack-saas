@@ -2,15 +2,10 @@ import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { api } from '$convex/_generated/api.js';
 import { createConvexHttpClient } from '@mmailaender/convex-better-auth-svelte/sveltekit';
-import { SITE_URL } from '$env/static/private';
 
-if (SITE_URL && !process.env.SITE_URL) {
-	process.env.SITE_URL = SITE_URL;
-}
-
-export const load: LayoutServerLoad = async ({ cookies }) => {
-	// Create Convex client with cookies (automatically extracts auth token)
-	const client = createConvexHttpClient({ cookies });
+export const load: LayoutServerLoad = async ({ locals }) => {
+	// Create Convex client with auth token from locals
+	const client = createConvexHttpClient({ token: locals.token });
 
 	try {
 		// Fetch current user using Convex query
