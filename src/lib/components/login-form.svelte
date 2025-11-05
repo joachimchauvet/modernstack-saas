@@ -82,9 +82,9 @@
 
 <Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
-		<Card.Title class="text-2xl">{isSignUp ? 'Sign Up' : 'Login'}</Card.Title>
+		<Card.Title class="text-2xl">{isSignUp ? 'Sign Up' : 'Sign In'}</Card.Title>
 		<Card.Description>
-			{isSignUp ? 'Create a new account' : 'Enter your email below to login to your account'}
+			{isSignUp ? 'Create a new account' : 'Enter your email below to sign in to your account'}
 		</Card.Description>
 	</Card.Header>
 	<Card.Content>
@@ -131,7 +131,7 @@
 					{#if isLoading}
 						Loading...
 					{:else}
-						{isSignUp ? 'Sign Up' : 'Login'}
+						{isSignUp ? 'Sign Up' : 'Sign In'}
 					{/if}
 				</Button>
 				<Button variant="outline" class="w-full" type="button" onclick={handleGoogleLogin}>
@@ -141,7 +141,7 @@
 							fill="currentColor"
 						/>
 					</svg>
-					{isSignUp ? 'Sign up' : 'Login'} with Google
+					{isSignUp ? 'Sign up' : 'Sign In'} with Google
 				</Button>
 			</div>
 		</form>
@@ -150,7 +150,7 @@
 			{#if isSignUp}
 				Already have an account?
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-				<a href={resolve('/auth/sign-in')} class="underline hover:text-primary">Login</a>
+				<a href={resolve('/auth/sign-in')} class="underline hover:text-primary">Sign In</a>
 			{:else}
 				Don't have an account?
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
