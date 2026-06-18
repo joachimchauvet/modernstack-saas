@@ -16,6 +16,7 @@ import type * as billing from "../billing.js";
 import type * as email from "../email.js";
 import type * as http from "../http.js";
 import type * as organizations from "../organizations.js";
+import type * as preview from "../preview.js";
 import type * as storage from "../storage.js";
 
 import type {
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   email: typeof email;
   http: typeof http;
   organizations: typeof organizations;
+  preview: typeof preview;
   storage: typeof storage;
 }>;
 
