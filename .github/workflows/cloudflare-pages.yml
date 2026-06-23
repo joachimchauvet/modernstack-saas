@@ -1,23 +1,20 @@
 name: Cloudflare Pages
 
+# Branch deployments only. Pull request previews (with their own isolated Convex
+# preview deployment) are handled by `convex-preview.yml`.
 on:
   push:
     branches:
       - dev
       - main
-  pull_request:
-    branches:
-      - main
-      - dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy to Cloudflare Pages
+    name: Deploy Convex + Cloudflare Pages
     permissions:
       contents: read
       deployments: write
-      pull-requests: write
     environment:
       name: ${{ (github.ref == 'refs/heads/main' && 'production') || 'development' }}
 
@@ -37,6 +34,15 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # Deploy the Convex backend BEFORE building the frontend so the site never
+      # goes live against an un-migrated backend. For branch deploys the Convex
+      # URLs are fixed per environment (read from GitHub vars below), not from
+      # this step's output — that only applies to previews.
+      - name: Deploy Convex
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: pnpm convex deploy
 
       - name: Build
         env:
@@ -65,58 +71,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy ./.svelte-kit/cloudflare --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME || steps.extract_repo.outputs.repo_name }} --branch=${{ github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add or Update PR Comment with Preview URL
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const deploymentUrl = '${{ steps.cloudflare-deploy.outputs.deployment-url }}';
-            const aliasUrl = '${{ steps.cloudflare-deploy.outputs.pages-deployment-alias-url }}';
-            const issueNumber = context.issue.number;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const marker = '<!-- pr-deploy-comment -->';
-
-            let commentBody = `${marker}\n🚀 Preview deployment is ready!\n\n`;
-            let hasUrls = false;
-
-            if (deploymentUrl) {
-              commentBody += `🔗 **Unique deployment URL**: ${deploymentUrl}\n\n`;
-              hasUrls = true;
-            }
-            if (aliasUrl) {
-              commentBody += `🔗 **Branch preview URL (${process.env.GITHUB_HEAD_REF})**: ${aliasUrl}\n\n`;
-              hasUrls = true;
-            }
-
-            if (!hasUrls) {
-              console.log('No deployment URLs found, skipping comment update/creation.');
-              return;
-            }
-
-            const { data: comments } = await github.rest.issues.listComments({
-              owner,
-              repo,
-              issue_number: issueNumber,
-            });
-            const existingComment = comments.find(comment => comment.body.includes(marker));
-
-            if (existingComment) {
-              console.log(`Updating existing deployment comment (ID: ${existingComment.id})`);
-              await github.rest.issues.updateComment({
-                owner,
-                repo,
-                comment_id: existingComment.id,
-                body: commentBody
-              });
-            } else {
-              console.log('Creating new deployment comment.');
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: issueNumber,
-                body: commentBody
-              });
-            }

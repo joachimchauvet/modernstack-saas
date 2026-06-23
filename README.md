@@ -292,8 +292,46 @@ This project includes comprehensive documentation optimized for LLM consumption:
 GitHub Actions workflows are included for:
 
 - **Code Quality** (`.github/workflows/code-quality.yml`) - Linting, formatting, type checking, and spell checking on every push/PR
-- **Cloudflare Pages** (`.github/workflows/cloudflare-pages.yml`) - Automatic deployments with preview URLs for pull requests
-- **Cloudflare Workers** (`.github/workflows/deploy-workers.yml`) - Alternative deployment target with more features
+- **Cloudflare Pages** (`.github/workflows/cloudflare-pages.yml`) - Branch deployments: on push to `dev`/`main` it deploys the Convex backend, then builds and deploys the frontend. Uses the `development` (for `dev`) and `production` (for `main`) GitHub Environments.
+- **Convex + Pages Preview** (`.github/workflows/convex-preview.yml`) - Per-PR previews: spins up an isolated Convex preview deployment, optionally clones data into it, then deploys a Cloudflare Pages preview wired to that backend, and comments the URLs on the PR.
+
+### Branch deployments
+
+The Pages workflow runs `pnpm convex deploy` before building, so each environment needs a `CONVEX_DEPLOY_KEY` secret in addition to the build variables above.
+
+| GitHub Environment | Trigger        | Secrets                                                              | Variables                                                                            |
+| ------------------ | -------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `development`      | push to `dev`  | `CONVEX_DEPLOY_KEY`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | `PUBLIC_CONVEX_URL`, `PUBLIC_CONVEX_SITE_URL`, `SITE_URL`, `CLOUDFLARE_PROJECT_NAME` |
+| `production`       | push to `main` | same as above (production keys)                                      | same as above (production values)                                                    |
+
+Enable required reviewers on the `production` environment for a deliberate release gate.
+
+### Preview deployments
+
+The preview workflow is **project-agnostic** — it never names a Convex project. Which project a preview lands in, and which deployment data is copied from, is decided entirely by the deploy keys you put in the `preview` GitHub Environment.
+
+> **Requires a Convex paid plan.** Preview deployments are a paid feature, and each open PR consumes one in the preview key's project.
+
+Configure the **`preview`** GitHub Environment:
+
+| Type     | Name                                            | Purpose                                                                                                                        |
+| -------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Secret   | `CONVEX_PREVIEW_DEPLOY_KEY`                     | A Convex **preview** deploy key. Creates the preview and imports/runs against it.                                              |
+| Secret   | `CONVEX_SOURCE_DEPLOY_KEY`                      | _Optional._ A **non-preview** key (staging or prod) for the deployment to copy data from. Only needed when data cloning is on. |
+| Secret   | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Pages deploy.                                                                                                       |
+| Variable | `CLOUDFLARE_PROJECT_NAME`                       | Pages project (defaults to the repo name).                                                                                     |
+| Variable | `CONVEX_PREVIEW_COPY_DATA`                      | `true` to clone data into previews (default off).                                                                              |
+| Variable | `CONVEX_PREVIEW_INCLUDE_FILE_STORAGE`           | `true` to also copy file storage (e.g. uploaded avatars).                                                                      |
+
+Per-preview runtime env (`SITE_URL`, `CONVEX_DEPLOYMENT_KIND`) is set automatically by the workflow. Secrets that are the **same for every preview** — `BETTER_AUTH_SECRET`, an Autumn **sandbox** key, Google OAuth credentials — should be set once as Convex **"default environment variables for preview deployments"** in the dashboard, so they stay out of CI logs.
+
+Notes:
+
+- **Data cloning is off by default.** When enabled, copied auth/org rows may contain real personal data and dangling billing customer IDs; `preview:postImportCleanup` (`src/convex/preview.ts`) clears ephemeral Better Auth state (`session`, `verification`, `invitation`, `jwks`) after import. Prefer staging over production as the source.
+- **Google OAuth doesn't work on previews** — the ephemeral origin isn't a registered redirect URI. Use email/password on previews.
+- **Schema-changing PRs** may get an empty preview: a snapshot from an older schema can fail to import against the new one, and the import step is intentionally non-fatal.
+- **Fork PRs** don't receive previews — GitHub withholds environment secrets from forks.
+- **Teardown** is automatic: Convex auto-expires idle previews (~14 days); there's no CLI command to delete one.
 
 ## Built for Modern Stack Hackathon
 

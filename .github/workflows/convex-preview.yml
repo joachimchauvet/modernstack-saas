@@ -1,0 +1,212 @@
+name: Convex + Pages Preview
+
+# Per-PR preview: spins up an isolated Convex preview deployment, (optionally)
+# clones data into it, then builds and deploys a Cloudflare Pages preview wired
+# to that backend.
+#
+# This workflow is project-agnostic — it never names a Convex project. Which
+# project the preview lands in (and which deployment data is copied from) is
+# decided entirely by the deploy keys you put in the `preview` GitHub
+# Environment. See README / docs/convex.md for setup.
+#
+# Teardown: there is no CLI command to delete a preview deployment (convex 1.41).
+# Convex auto-expires idle previews after ~14 days, so closed PRs clean
+# themselves up; no teardown job is needed.
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+    types: [opened, synchronize, reopened]
+
+# One in-flight run per PR; a new push cancels the previous build.
+concurrency:
+  group: convex-preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    name: Deploy Convex + Pages preview
+    environment: preview
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Convex preview names and Cloudflare branch aliases can't contain "/", so
+      # slugify the branch. The Pages alias is derived from the same slug.
+      - name: Compute preview slug and project
+        id: prep
+        run: |
+          set -euo pipefail
+          BRANCH="${{ github.head_ref }}"
+          SLUG=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[^a-z0-9-]+/-/g; s/^-+//; s/-+$//; s/-+/-/g')
+          if [ -z "$SLUG" ]; then SLUG="pr-${{ github.event.number }}"; fi
+          PROJECT="${{ vars.CLOUDFLARE_PROJECT_NAME }}"
+          if [ -z "$PROJECT" ]; then PROJECT="${{ github.event.repository.name }}"; fi
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "project=$PROJECT" >> "$GITHUB_OUTPUT"
+          # Best-guess Pages alias; patched with the real one after deploy.
+          echo "guess_url=https://${SLUG}.${PROJECT}.pages.dev" >> "$GITHUB_OUTPUT"
+
+      # Creates a fresh isolated preview deployment and pushes this branch's
+      # schema/functions to it. The deploy output carries the preview URL.
+      - name: Create Convex preview deployment
+        id: convex
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          OUTPUT=$(pnpm convex deploy --preview-create "${{ steps.prep.outputs.slug }}" 2>&1)
+          echo "$OUTPUT"
+          CLOUD_URL=$(echo "$OUTPUT" | grep -oE 'https://[a-z0-9-]+\.convex\.cloud' | tail -n1)
+          if [ -z "$CLOUD_URL" ]; then
+            echo "::error::Could not determine the preview Convex URL from deploy output."
+            exit 1
+          fi
+          echo "cloud_url=$CLOUD_URL" >> "$GITHUB_OUTPUT"
+          echo "site_url=${CLOUD_URL/.convex.cloud/.convex.site}" >> "$GITHUB_OUTPUT"
+
+      # Per-preview runtime env on the Convex side. SITE_URL is what Better Auth
+      # uses as its baseURL (see src/convex/auth.ts); it's set to a best-guess
+      # alias here and patched after the Pages deploy. CONVEX_DEPLOYMENT_KIND
+      # arms the postImportCleanup safety guard.
+      #
+      # NOTE: secrets that are the same for every preview — BETTER_AUTH_SECRET,
+      # an Autumn *sandbox* key, Google OAuth creds — should be configured once
+      # as Convex "default environment variables for preview deployments" in the
+      # dashboard, not here, so they stay out of CI logs.
+      - name: Configure preview Convex env
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          SLUG="${{ steps.prep.outputs.slug }}"
+          pnpm convex env set CONVEX_DEPLOYMENT_KIND preview --preview-name "$SLUG"
+          pnpm convex env set SITE_URL "${{ steps.prep.outputs.guess_url }}" --preview-name "$SLUG"
+
+      # ---- Optional data cloning (off by default) ------------------------------
+      # Enable by setting the `preview` environment variable
+      # CONVEX_PREVIEW_COPY_DATA=true and providing CONVEX_SOURCE_DEPLOY_KEY (a
+      # NON-preview key for the deployment to copy from — staging or prod). The
+      # source key selects its own deployment, so no --deployment flag is needed.
+      - name: Export source snapshot
+        if: vars.CONVEX_PREVIEW_COPY_DATA == 'true'
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_SOURCE_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ./snapshot
+          if [ "${{ vars.CONVEX_PREVIEW_INCLUDE_FILE_STORAGE }}" = "true" ]; then
+            pnpm convex export --include-file-storage --path ./snapshot
+          else
+            pnpm convex export --path ./snapshot
+          fi
+          ls -lh ./snapshot/
+
+      # Import is non-fatal: a schema-changing PR can make an older snapshot fail
+      # validation against the freshly deployed schema. Better an empty preview
+      # than a failed job.
+      - name: Import snapshot into preview
+        if: vars.CONVEX_PREVIEW_COPY_DATA == 'true'
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+        run: |
+          set -uo pipefail
+          SNAPSHOT=$(ls ./snapshot/*.zip 2>/dev/null | head -n1)
+          if [ -z "$SNAPSHOT" ]; then
+            echo "::warning::No snapshot ZIP found; skipping import."
+            exit 0
+          fi
+          pnpm convex import --preview-name "${{ steps.prep.outputs.slug }}" \
+            --replace-all -y "$SNAPSHOT" \
+            || echo "::warning::Import failed (likely schema drift); leaving preview empty."
+
+      # Clears ephemeral / deployment-coupled Better Auth state from the copied
+      # snapshot. No-op-safe to run; guarded by CONVEX_DEPLOYMENT_KIND=preview.
+      - name: Post-import cleanup
+        if: vars.CONVEX_PREVIEW_COPY_DATA == 'true'
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+        run: |
+          pnpm convex run --preview-name "${{ steps.prep.outputs.slug }}" \
+            preview:postImportCleanup
+      # --------------------------------------------------------------------------
+      - name: Build
+        env:
+          PUBLIC_CONVEX_URL: ${{ steps.convex.outputs.cloud_url }}
+          PUBLIC_CONVEX_SITE_URL: ${{ steps.convex.outputs.site_url }}
+          SITE_URL: ${{ steps.prep.outputs.guess_url }}
+        run: pnpm run build
+
+      - name: Set Cloudflare Node Version
+        run: cp .node-version ./.svelte-kit/cloudflare/.node-version
+
+      - name: Deploy to Cloudflare Pages
+        id: cloudflare-deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./.svelte-kit/cloudflare --project-name=${{ steps.prep.outputs.project }} --branch=${{ steps.prep.outputs.slug }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      # Cloudflare truncates branch names >28 chars, so the real alias can differ
+      # from our guess. Patch SITE_URL with the actual alias so Better Auth
+      # cookies, redirects, and email links use the real preview origin.
+      - name: Patch preview Convex env with real Pages alias
+        if: steps.cloudflare-deploy.outputs.pages-deployment-alias-url != ''
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+        run: |
+          pnpm convex env set SITE_URL \
+            "${{ steps.cloudflare-deploy.outputs.pages-deployment-alias-url }}" \
+            --preview-name "${{ steps.prep.outputs.slug }}"
+
+      - name: Comment preview URLs on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- convex-preview-comment -->';
+            const convexUrl = '${{ steps.convex.outputs.cloud_url }}';
+            const alias = '${{ steps.cloudflare-deploy.outputs.pages-deployment-alias-url }}';
+            const unique = '${{ steps.cloudflare-deploy.outputs.deployment-url }}';
+            const body = [
+              marker,
+              '🚀 **Preview is ready!**',
+              '',
+              alias ? `🔗 **App (branch alias)**: ${alias}` : '',
+              unique ? `🔗 **App (unique URL)**: ${unique}` : '',
+              `🗄️ **Convex preview**: ${convexUrl}`,
+              '',
+              '_Note: Google OAuth is disabled on previews (unregistered redirect URI); use email/password._',
+            ].filter(Boolean).join('\n');
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.find((c) => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
