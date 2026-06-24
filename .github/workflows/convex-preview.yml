@@ -10,8 +10,8 @@ name: Convex + Pages Preview
 # Environment. See README / docs/convex.md for setup.
 #
 # Teardown: there is no CLI command to delete a preview deployment (convex 1.41).
-# Convex auto-expires idle previews after ~14 days, so closed PRs clean
-# themselves up; no teardown job is needed.
+# Convex auto-expires idle previews after ~5 days on Free/Starter (~14 on Pro+),
+# so closed PRs clean themselves up; no teardown job is needed.
 on:
   pull_request:
     branches:

@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-06-23 — Per-PR Convex preview deployments
+
+Every pull request now gets its own isolated full-stack preview — a fresh Convex
+preview deployment plus a matching Cloudflare Pages preview
+(`.github/workflows/convex-preview.yml`), with both URLs commented on the PR.
+
+- **Optional data cloning** (off by default): import a snapshot from a source
+  deployment, then `preview:postImportCleanup` clears ephemeral Better Auth state
+  (sessions, verifications, invitations, jwks).
+- **Project-agnostic**: which Convex project a preview uses is decided entirely by
+  the deploy keys in the `preview` GitHub Environment.
+- **Branch deploys**: `cloudflare-pages.yml` now runs `convex deploy` before the
+  build; the unused Cloudflare Workers workflow was removed.
+
+Previews auto-delete after 5 days (Free/Starter) or 14 days (Pro+).
+
 ## 2026-06-12 — Organizations, org-scoped billing & admin impersonation
 
 Added multi-tenancy via the Better Auth organization plugin, with billing scoped

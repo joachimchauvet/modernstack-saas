@@ -310,7 +310,7 @@ Enable required reviewers on the `production` environment for a deliberate relea
 
 The preview workflow is **project-agnostic** — it never names a Convex project. Which project a preview lands in, and which deployment data is copied from, is decided entirely by the deploy keys you put in the `preview` GitHub Environment.
 
-> **Requires a Convex paid plan.** Preview deployments are a paid feature, and each open PR consumes one in the preview key's project.
+> **Plan note.** Preview deployments work on all plans, including the free tier — but idle previews are auto-deleted after **5 days** on Free/Starter (**14 days** on Pro and up). Each open PR consumes a preview deployment in the preview key's project.
 
 Configure the **`preview`** GitHub Environment:
 
@@ -331,7 +331,7 @@ Notes:
 - **Google OAuth doesn't work on previews** — the ephemeral origin isn't a registered redirect URI. Use email/password on previews.
 - **Schema-changing PRs** may get an empty preview: a snapshot from an older schema can fail to import against the new one, and the import step is intentionally non-fatal.
 - **Fork PRs** don't receive previews — GitHub withholds environment secrets from forks.
-- **Teardown** is automatic: Convex auto-expires idle previews (~14 days); there's no CLI command to delete one.
+- **Teardown** is automatic: Convex auto-expires idle previews (~5 days on Free/Starter, ~14 on Pro+); there's no CLI command to delete one.
 
 ## Built for Modern Stack Hackathon
 

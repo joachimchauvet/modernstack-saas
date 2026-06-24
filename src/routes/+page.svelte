@@ -10,8 +10,10 @@
 		CreditCard,
 		Settings,
 		Users,
+		Building2,
 		BookOpen,
 		GitBranch,
+		GitPullRequest,
 		Cloud,
 		Mail,
 		PiggyBank
@@ -57,8 +59,8 @@
 					>
 				</h1>
 				<p class="mt-4 text-pretty text-muted-foreground sm:text-lg">
-					Auth, dashboard, payments, settings, and a modern UI — wired up with Convex, Better Auth,
-					Autumn, and shadcn-svelte. Focus on your product, not the plumbing.
+					Auth, teams, dashboard, payments, settings, and a modern UI — wired up with Convex, Better
+					Auth, Autumn, and shadcn-svelte. Focus on your product, not the plumbing.
 				</p>
 				<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
 					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
@@ -86,7 +88,7 @@
 						<div class="space-y-1">
 							<Card.Title class="text-base">Better Auth</Card.Title>
 							<Card.Description
-								>Email/password, admin roles, and organization-ready access control.</Card.Description
+								>Email/password, admin roles, and built-in organizations with role-based access.</Card.Description
 							>
 						</div>
 					</div>
@@ -151,6 +153,14 @@
 				</p>
 			</div>
 			<div class="rounded-lg border p-6">
+				<div class="mb-2 text-primary"><Building2 class="h-5 w-5" /></div>
+				<p class="font-medium">Teams & multi-tenancy</p>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Organizations with owner/admin/member roles, email invitations, an org switcher, and
+					billing scoped to the active org.
+				</p>
+			</div>
+			<div class="rounded-lg border p-6">
 				<div class="mb-2 text-primary"><Settings class="h-5 w-5" /></div>
 				<p class="font-medium">Settings pages</p>
 				<p class="mt-1 text-sm text-muted-foreground">
@@ -196,7 +206,15 @@
 				<div class="mb-2 text-primary"><GitBranch class="h-5 w-5" /></div>
 				<p class="font-medium">CI/CD included</p>
 				<p class="mt-1 text-sm text-muted-foreground">
-					GitHub Actions automate linting, tests, and Cloudflare deployments out of the box.
+					GitHub Actions automate linting, type-checks, and Cloudflare deployments out of the box.
+				</p>
+			</div>
+			<div class="rounded-lg border p-6">
+				<div class="mb-2 text-primary"><GitPullRequest class="h-5 w-5" /></div>
+				<p class="font-medium">Per-PR preview environments</p>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Every pull request gets an isolated Convex + Cloudflare preview, optionally seeded with
+					real data.
 				</p>
 			</div>
 			<div class="rounded-lg border p-6">
@@ -223,10 +241,24 @@
 						<Accordion.Trigger>What's included in this starter template?</Accordion.Trigger>
 						<Accordion.Content>
 							The starter includes a complete authentication system with Better Auth (email/password
-							and OAuth), user roles with an admin dashboard, a real-time Convex backend,
+							and OAuth), multi-tenant organizations (teams, owner/admin/member roles, and email
+							invitations) with org-scoped billing, an admin dashboard with user impersonation, a
+							real-time Convex backend, GitHub Actions CI/CD with per-PR preview deployments,
 							Stripe-ready billing integration with Autumn, a responsive dashboard with charts and
 							data tables, user settings pages, and a modern UI built with shadcn-svelte and
 							Tailwind CSS v4. Everything is fully typed with TypeScript.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-teams">
+						<Accordion.Trigger>Does it support teams / multi-tenant SaaS?</Accordion.Trigger>
+						<Accordion.Content>
+							Yes — multi-tenancy is built in via the Better Auth organization plugin. Every user
+							gets a default organization on sign-up (so single-user/B2C works unchanged), plus an
+							organization switcher, a settings page to rename the org and manage members and roles
+							(owner/admin/member), and email invitations with an accept flow. Billing is scoped to
+							the active organization, and an admin area lets you browse organizations and
+							impersonate users.
 						</Accordion.Content>
 					</Accordion.Item>
 
@@ -248,6 +280,17 @@
 							>, then deploy your frontend to Cloudflare Pages, Vercel, or Netlify. The template
 							includes GitHub Actions workflows for automated deployments. Full deployment
 							instructions are available in the README.
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<Accordion.Item value="item-preview">
+						<Accordion.Trigger>Does it include preview deployments?</Accordion.Trigger>
+						<Accordion.Content>
+							Yes. A GitHub Actions workflow gives every pull request its own isolated environment:
+							it spins up a fresh Convex preview deployment and a matching Cloudflare Pages preview,
+							and can optionally seed it with a snapshot of your data. Each PR is isolated from
+							production and from other PRs, and Convex automatically cleans previews up when they
+							go idle.
 						</Accordion.Content>
 					</Accordion.Item>
 
