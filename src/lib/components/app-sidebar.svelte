@@ -23,7 +23,7 @@
 	import { resolve } from '$app/paths';
 
 	import { api } from '$convex/_generated/api.js';
-	import { useQuery } from '@mmailaender/convex-svelte';
+	import { useQuery } from 'convex-svelte';
 	import { siteConfig } from '$lib/config.js';
 	import { canManageOrganization } from '$lib/organizations.js';
 

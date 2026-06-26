@@ -7,7 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import { showErrorToast } from '$lib/toast.js';
 	import { api } from '$convex/_generated/api.js';
-	import { useConvexClient } from '@mmailaender/convex-svelte';
+	import { useConvexClient } from 'convex-svelte';
 	import { Upload } from '@lucide/svelte';
 
 	interface Props {

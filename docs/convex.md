@@ -345,15 +345,17 @@ export const exampleQuery = query({
 
 - Convex storage stores items as `Blob` objects. You must convert all items to/from a `Blob` when using Convex storage.
 
-## Frontend Integration with @mmailaender/convex-svelte
+## Frontend Integration with convex-svelte
 
-This project uses `@mmailaender/convex-svelte` (a Better Auth-aware fork of `convex-svelte`) together with `@mmailaender/convex-better-auth-svelte`, as prescribed by the [official Convex + Better Auth + SvelteKit guide](https://labs.convex.dev/better-auth/framework-guides/sveltekit). The reactive API (`useQuery`, `useConvexClient`) is the same as upstream `convex-svelte`; only the package name and client setup differ.
+This project uses the official `convex-svelte` package together with `@mmailaender/convex-better-auth-svelte`, as prescribed by the [official Convex + Better Auth + SvelteKit guide](https://labs.convex.dev/better-auth/framework-guides/sveltekit). (`@mmailaender/convex-better-auth-svelte` v0.8.0 switched its peer dependency from the community `@mmailaender/convex-svelte` fork to the official `convex-svelte`.)
+
+> **`better-auth` is pinned to `1.6.17` (exact, not `~`).** better-auth `>=1.6.18` changed its client session-type inference so the precisely-typed `authClient` no longer matches `@mmailaender/convex-better-auth-svelte`'s `AuthClient` union, which fails `pnpm check` in `src/routes/+layout.svelte`. It is a type-only break (runtime is fine). Unpin and bump once a `@mmailaender/convex-better-auth-svelte` release restores compatibility with newer `better-auth`.
 
 ### Setup
 
 - The Convex client is set up in the root layout (`src/routes/+layout.svelte`) by `createSvelteAuthClient({ authClient })` from `@mmailaender/convex-better-auth-svelte/svelte`, which calls `setupConvex()` internally **and** wires Better Auth tokens — so you do not call `setupConvex()` yourself in this project.
-- (Without Better Auth you would instead call `setupConvex(PUBLIC_CONVEX_URL)` from `@mmailaender/convex-svelte` directly.)
-- Import `useQuery` for reactive data queries and `useConvexClient` for mutations/actions from `@mmailaender/convex-svelte`.
+- (Without Better Auth you would instead call `setupConvex(PUBLIC_CONVEX_URL)` from `convex-svelte` directly.)
+- Import `useQuery` for reactive data queries and `useConvexClient` for mutations/actions from `convex-svelte`.
 
 ### Real-time Query Patterns
 
@@ -366,7 +368,7 @@ import { authClient } from '$lib/auth-client';
 createSvelteAuthClient({ authClient });
 
 // Component with reactive queries
-import { useQuery, useConvexClient } from '@mmailaender/convex-svelte';
+import { useQuery, useConvexClient } from 'convex-svelte';
 import { api } from '$convex/_generated/api';
 
 let userId = $state<Id<'users'> | null>(null);

@@ -9,7 +9,7 @@
 	import { Check } from '@lucide/svelte';
 
 	import { invalidateAll } from '$app/navigation';
-	import { useConvexClient, useQuery } from '@mmailaender/convex-svelte';
+	import { useConvexClient, useQuery } from 'convex-svelte';
 	import { showErrorToast } from '$lib/toast.js';
 	import { canManageOrganization } from '$lib/organizations.js';
 	import type { Customer, ListPlansList } from 'autumn-js';
