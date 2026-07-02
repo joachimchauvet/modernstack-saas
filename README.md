@@ -27,6 +27,15 @@ A production-ready SaaS starter template built for the [Modern Stack Hackathon](
   - Avatar upload with Convex storage
   - Account information management
 
+- ✅ **Closed Signups & Waitlist**
+  - Flip `npx convex env set SIGNUPS_DISABLED true` to close public signups per environment
+  - Sign-up page swaps to a waitlist form (name + email); enforcement is server-side in Better Auth
+  - Double opt-in confirmation emails when Resend is configured (single opt-in fallback otherwise)
+  - Enumeration-safe: joining always shows the same success message, whether or not the address is already on the list
+  - Organization invitations and admin-created accounts still work while signups are closed
+  - Per-IP and per-address rate limiting via `@convex-dev/rate-limiter`
+  - Admin page to browse, filter, and remove waitlist entries
+
 - ✅ **Organizations & Multi-tenancy**
   - Better Auth organization plugin with roles (owner/admin/member)
   - Default organization auto-created per user (B2C works out of the box)
@@ -57,7 +66,7 @@ Planned features and improvements:
 - [x] **OAuth Support** - Complete social provider integration and example with Google OAuth
 - [x] **Multi-tenancy / Team Support** - Organizations, team invites, and role-based permissions
 - [ ] **GitHub Action for Cloudflare Workers** - Currently, only Cloudflare Pages deployment is fully functional
-- [ ] **Rate Limiting** - API rate limiting and request throttling
+- [ ] **Rate Limiting** - API rate limiting and request throttling (waitlist endpoints are already rate limited via `@convex-dev/rate-limiter`)
 - [ ] **Stripe Stats in Admin Dashboard** - Revenue analytics and subscription metrics
 - [ ] **Welcome Email Template** - Branded welcome emails for new users
 - [ ] **E2E Tests with Playwright** - Comprehensive end-to-end testing suite
@@ -134,6 +143,11 @@ npx convex env set GOOGLE_CLIENT_SECRET your_google_client_secret
 
 # Optional - Enable billing with Autumn/Stripe
 npx convex env set AUTUMN_SECRET_KEY your_autumn_secret_key
+
+# Optional - Close public signups and collect a waitlist instead
+# (organization invitations and admin-created accounts keep working;
+#  unset the var or set anything but "true" to reopen signups)
+npx convex env set SIGNUPS_DISABLED true
 ```
 
 Verify your Convex env vars are set:

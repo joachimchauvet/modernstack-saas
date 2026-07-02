@@ -19,7 +19,7 @@ import { normalizeOrganizationRoles } from '../lib/organizations';
  * from /admin/users and use the regular org UI instead.
  */
 
-async function requireAdmin(ctx: GenericCtx<DataModel>) {
+export async function requireAdmin(ctx: GenericCtx<DataModel>) {
 	const user = await authComponent.safeGetAuthUser(ctx);
 	if (!user || user.role !== 'admin') {
 		throw new ConvexError('Admin access required');

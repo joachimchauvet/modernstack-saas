@@ -18,6 +18,7 @@ import type * as http from "../http.js";
 import type * as organizations from "../organizations.js";
 import type * as preview from "../preview.js";
 import type * as storage from "../storage.js";
+import type * as waitlist from "../waitlist.js";
 
 import type {
   ApiFromModules,
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   organizations: typeof organizations;
   preview: typeof preview;
   storage: typeof storage;
+  waitlist: typeof waitlist;
 }>;
 
 /**
@@ -66,4 +68,5 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
+  rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
 };

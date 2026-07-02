@@ -11,6 +11,9 @@ importers:
       '@convex-dev/better-auth':
         specifier: ^0.12.4
         version: 0.12.4(@standard-schema/spec@1.1.0)(better-auth@1.6.17(@cloudflare/workers-types@4.20250927.0)(@sveltejs/kit@2.64.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.44.1))(vite@8.0.16(@types/node@24.13.2)(esbuild@0.27.0)(jiti@2.7.0)(yaml@2.8.1)))(svelte@5.56.3(@typescript-eslint/types@8.44.1))(typescript@5.9.2)(vite@8.0.16(@types/node@24.13.2)(esbuild@0.27.0)(jiti@2.7.0)(yaml@2.8.1)))(react-dom@19.1.1(react@19.2.7))(react@19.2.7)(svelte@5.56.3(@typescript-eslint/types@8.44.1)))(convex@1.42.0(react@19.2.7))(react@19.2.7)(typescript@5.9.2)
+      '@convex-dev/rate-limiter':
+        specifier: ^0.3.2
+        version: 0.3.2(convex@1.42.0(react@19.2.7))(react@19.2.7)
       '@mmailaender/convex-better-auth-svelte':
         specifier: ^0.8.0
         version: 0.8.0(23a1eadf1108136e7096079156414385)
@@ -309,6 +312,15 @@ packages:
       better-auth: '>=1.6.11 <1.7.0'
       convex: ^1.25.0
       react: ^18.3.1 || ^19.0.0
+
+  '@convex-dev/rate-limiter@0.3.2':
+    resolution: {integrity: sha512-+oBPsBfFbzdxiF/9XaaTQmVnvDlvEfg/c69/v8LxTbw4VLuiflIKlfnPQL8OS0azXQQ11hcPWHmU8ytFmHKDXA==}
+    peerDependencies:
+      convex: ^1.24.8
+      react: ^18.2.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -3798,6 +3810,12 @@ snapshots:
       - '@standard-schema/spec'
       - hono
       - typescript
+
+  '@convex-dev/rate-limiter@0.3.2(convex@1.42.0(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      convex: 1.42.0(react@19.2.7)
+    optionalDependencies:
+      react: 19.2.7
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:

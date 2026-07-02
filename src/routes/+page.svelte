@@ -11,6 +11,7 @@
 		Settings,
 		Users,
 		Building2,
+		ClipboardList,
 		BookOpen,
 		GitBranch,
 		GitPullRequest,
@@ -150,6 +151,14 @@
 				<p class="font-medium">Auth flows included</p>
 				<p class="mt-1 text-sm text-muted-foreground">
 					Sign up, sign in, forgot/reset password, and sign out wired up.
+				</p>
+			</div>
+			<div class="rounded-lg border p-6">
+				<div class="mb-2 text-primary"><ClipboardList class="h-5 w-5" /></div>
+				<p class="font-medium">Waitlist mode</p>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Close public signups with one env var and collect a waitlist instead, with double opt-in
+					confirmation emails.
 				</p>
 			</div>
 			<div class="rounded-lg border p-6">

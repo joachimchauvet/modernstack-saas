@@ -9,6 +9,7 @@
 		CircleQuestionMark,
 		Box,
 		Building2,
+		ClipboardList,
 		Settings,
 		Users,
 		CreditCard
@@ -149,6 +150,11 @@
 				name: 'Organizations',
 				url: '/admin/organizations',
 				icon: Building2
+			},
+			{
+				name: 'Waitlist',
+				url: '/admin/waitlist',
+				icon: ClipboardList
 			}
 		]
 	}));

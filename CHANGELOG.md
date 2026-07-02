@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-07-02 — Disable signups & waitlist
+
+Optionally close public signups (`SIGNUPS_DISABLED=true` on the Convex deployment)
+and collect a waitlist instead. The sign-up page swaps to a name/email form, with
+enforcement in a Better Auth hook so it covers OAuth too; invitations and
+admin-created accounts still work while closed. Double opt-in when Resend is
+configured, enumeration-safe joins, per-IP/per-address rate limiting, and an
+`/admin/waitlist` page.
+
+## 2026-06-26 — Back to the official convex-svelte
+
+Replaced the community `convex-svelte` fork with the official package, now that
+`@mmailaender/convex-better-auth-svelte` (`^0.8.0`) supports it. `better-auth` is
+pinned to exactly `1.6.17` — `>=1.6.18` breaks the integration's client types and
+fails `pnpm check` (type-only); unpin once a compatible release ships.
+
 ## 2026-06-23 — Per-PR Convex preview deployments
 
 Every pull request now gets its own isolated full-stack preview — a fresh Convex

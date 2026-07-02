@@ -7,9 +7,15 @@ export default defineConfig(({ mode }) => {
 	const allowedHosts = env.VITE_ALLOWED_HOSTS?.split(',')
 		.map((s) => s.trim())
 		.filter(Boolean);
+	const port = Number.parseInt(env.VITE_PORT ?? '', 10);
 
 	return {
 		plugins: [tailwindcss(), sveltekit()],
-		server: { host: '127.0.0.1', allowedHosts }
+		server: {
+			host: '127.0.0.1',
+			port: Number.isNaN(port) ? undefined : port,
+			strictPort: true,
+			allowedHosts
+		}
 	};
 });

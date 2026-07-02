@@ -163,6 +163,34 @@ export const createOptions = (ctx: GenericCtx<DataModel>) =>
 		databaseHooks: {
 			user: {
 				create: {
+					// Sign-up gate: when the SIGNUPS_DISABLED env var is set on the
+					// Convex deployment, public account creation is blocked and the
+					// sign-up page shows the waitlist instead (see `waitlist.ts`).
+					// Every sign-up path (email/password and OAuth) funnels through
+					// user creation, so this is the single enforcement point. Two
+					// exemptions keep "closed" meaning closed to the *public*:
+					// admins provisioning accounts, and addresses holding a pending
+					// organization invitation — so inviting someone (e.g. to let
+					// them off the waitlist) still works while signups are closed.
+					before: async (user, hookCtx) => {
+						if (process.env.SIGNUPS_DISABLED !== 'true') return;
+						if (hookCtx?.path === '/admin/create-user') return;
+						const invitation = (await findOne(ctx, {
+							model: 'invitation',
+							where: [
+								// Exact-match lookup: invitation emails are lowercased on
+								// creation (see `beforeCreateInvitation` below) because the
+								// Convex adapter only supports case-sensitive equality.
+								{ field: 'email', value: user.email.trim().toLowerCase() },
+								{ field: 'status', value: 'pending' }
+							]
+						})) as { expiresAt: number } | null;
+						if (invitation && invitation.expiresAt > Date.now()) return;
+						throw new APIError('FORBIDDEN', {
+							message:
+								'Signups are currently closed. Join the waitlist to get notified when a spot opens.'
+						});
+					},
 					after: async (user, hookCtx) => {
 						try {
 							const organization = await createDefaultOrganization(ctx, user);
@@ -256,6 +284,12 @@ export const createOptions = (ctx: GenericCtx<DataModel>) =>
 						// Invitation acceptance bypasses beforeAddMember, so validate
 						// the role at the source.
 						requireAssignableRole(normalizeOrganizationRoles(invitation.role));
+						// Store the invitee address lowercased: the Convex adapter only
+						// supports case-sensitive equality, and the sign-up gate above
+						// looks pending invitations up by normalized email. (Better Auth
+						// itself compares case-insensitively on acceptance, so this
+						// changes nothing else.)
+						return { data: { email: invitation.email.trim().toLowerCase() } };
 					},
 					beforeUpdateMemberRole: async ({ member, newRole }) => {
 						if (normalizeOrganizationRoles(member.role).includes('owner')) {
