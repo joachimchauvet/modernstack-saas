@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-07-13 — Inset sidebar layout
+
+The app shell now uses the sidebar's `inset` variant (as in shadcn's dashboard-01 block): the main content renders as a rounded, elevated card on the sidebar background.
+Icon collapse is unchanged, with the collapsed rail spacing evened out, and page headers use the shared `--header-height` variable.
+
 ## 2026-07-02 — Disable signups & waitlist
 
 Optionally close public signups (`SIGNUPS_DISABLED=true` on the Convex deployment)

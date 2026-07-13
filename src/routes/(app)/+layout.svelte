@@ -34,8 +34,10 @@
 		<div class="text-lg text-gray-600">Loading...</div>
 	</div>
 {:else if isAuthenticated}
-	<Sidebar.Provider>
-		<AppSidebar />
+	<Sidebar.Provider
+		style="--sidebar-width: calc(var(--spacing) * 72); --header-height: calc(var(--spacing) * 12);"
+	>
+		<AppSidebar variant="inset" />
 		<Sidebar.Inset>
 			{@render children()}
 		</Sidebar.Inset>
